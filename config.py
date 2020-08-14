@@ -4,20 +4,20 @@ import os
 class Config:
     best_models_dir = "../models"
 
-    model_save_dir = "/Users/petranovotna/Library/Mobile Documents/com~apple~CloudDocs/PhD/2020_CinC_paper/tmp"
+    model_save_dir = "../tmp"
 
-    DATA_PATH = "/Users/petranovotna/Library/Mobile Documents/com~apple~CloudDocs/PhD/2020_CinC_paper/Training_WFDB"
+    DATA_PATH = "../Training_WFDB"
 
-    DATA_TMP_PATH = "/content/drive/My Drive/CinC2020_semisupervised_SVES_KES/data/Training_WFDB_filtered_2"
+    DATA_TMP_PATH = "../Training_WFDB_filtered_2"
     # DATA_TMP_PATH= "/content/drive/My Drive/CinC2020_semisupervised_SVES_KES/data/Training_WFDB"
     # DATA_TMP_PATH= "/content/drive/My Drive/CinC2020_semisupervised_SVES_KES/data/Training_WFDB_filtered_PAC_normal"
 
     try:
-        os.mkdir(Config.DATA_TMP_PATH)
+        os.mkdir(DATA_TMP_PATH)
     except:
         pass
 
-    info_save_dir = "/Users/petranovotna/Library/Mobile Documents/com~apple~CloudDocs/PhD/2020_CinC_paper/tmp_info"
+    info_save_dir = "../tmp_info"
 
     # PVC  vs  ostatní data bez LBBB, RBBB, PAC
 
@@ -53,3 +53,4 @@ class Config:
     zeros_len = 400
 
     ploting = False
+

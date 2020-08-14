@@ -60,7 +60,7 @@ def train(names_train, names_valid):
 
         # change model to training mode
         model.train()
-        for pad_seqs, lens, lbls in training_generator:
+        for pad_seqs, lens, lbls, file_names in training_generator:
             ## send data to graphic card
             pad_seqs, lens, lbls = pad_seqs.to(device), lens.to(device), lbls.to(device)
 
@@ -83,7 +83,7 @@ def train(names_train, names_valid):
 
         ## validation mode - "disable" batch norm
         model.eval()
-        for pad_seqs, lens, lbls in validation_generator:
+        for pad_seqs, lens, lbls,file_names in validation_generator:
             pad_seqs, lens, lbls = pad_seqs.to(device), lens.to(device), lbls.to(device)
 
             res, heatmap, score = model(pad_seqs, lens)
@@ -107,6 +107,31 @@ def train(names_train, names_valid):
             loss = loss_fcn(res, lbls, w_positive_tensor, w_negative_tensor)
 
             log.save_tmp_log(lbls, res, loss)
+
+            if epoch == (Config.max_epochs-1):
+                heatmap_np = heatmap.detach().cpu().numpy()
+                pad_seq_np = pad_seqs.detach().cpu().numpy()
+                lens_np = lens.detach().cpu().numpy()
+
+                for hm_index in range(heatmap_np.shape[0]):
+                    heatmap0_np = heatmap_np[hm_index, :, :]
+                    pad_seqs0_np = pad_seq_np[hm_index,:,:]
+
+
+                    len_short = int(lens_np[hm_index])
+                    len_ratio = len_short / pad_seqs0_np.shape[2]
+                    heatmap_end = int(round(heatmap0_np.shape[2] * len_ratio))
+                    heatmap0_np = heatmap0_np[:,0:heatmap_end]
+
+                    heatmap0_np_res = np.interp(np.linspace(0, len(heatmap0_np) - 1, len_short),
+                                            np.linspace(0, len(heatmap0_np) - 1, len(heatmap0_np)), heatmap0_np)
+
+                    file_names_sep = os.path.split(file_names[hm_index])
+
+                    np.save(heatmap0_np_res,f"../res/{file_names_sep[1][:-4]}_heatmap.npy")
+
+
+
 
         log.save_log_data_and_clear_tmp('valid')
 

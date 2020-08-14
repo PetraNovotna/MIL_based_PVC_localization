@@ -8,7 +8,7 @@ import load_fncs as lf
 
 
 try:
-    rmtree(res_path)
+    rmtree(Config.DATA_TMP_PATH)
 except:
     pass
 

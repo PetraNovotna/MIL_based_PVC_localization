@@ -2,7 +2,7 @@
 # data import and stats
 import os
 import numpy as np
-import config as Config
+from config import Config
 import load_fncs as lf
 
 try:

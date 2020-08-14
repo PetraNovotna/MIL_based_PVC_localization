@@ -93,7 +93,7 @@ class Dataset(data.Dataset):
 
         # print(y)
 
-        return X, y
+        return X, y,file_name
 
     def collate_fn(data):
         ## this take list of samples and put them into batch
@@ -102,7 +102,7 @@ class Dataset(data.Dataset):
         pad_val = 0
 
         ## get list of singals and its lengths
-        seqs, lbls = zip(*data)
+        seqs, lbls, file_names = zip(*data)
 
         lens = [seq.shape[1] for seq in seqs]
 
@@ -122,7 +122,7 @@ class Dataset(data.Dataset):
         lbls = torch.from_numpy(lbls)
         lens = torch.from_numpy(lens)
 
-        return padded_seqs, lens, lbls
+        return padded_seqs, lens, lbls,file_names
 
 
 def main():
