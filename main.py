@@ -3,7 +3,7 @@ import scipy.io as io
 import torch
 from torch import optim
 from torch.utils import data
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 
 from load_fncs import read_data
@@ -119,16 +119,17 @@ def train(names_train, names_valid):
 
 
                     len_short = int(lens_np[hm_index])
-                    len_ratio = len_short / pad_seqs0_np.shape[2]
-                    heatmap_end = int(round(heatmap0_np.shape[2] * len_ratio))
+                    len_ratio = len_short / pad_seqs0_np.shape[1]
+                    heatmap_end = int(round(heatmap0_np.shape[1] * len_ratio))
                     heatmap0_np = heatmap0_np[:,0:heatmap_end]
+                    N=heatmap0_np.shape[1]
+                    heatmap0_np_res=[]
+                    for k in range(heatmap0_np.shape[0]):
+                        heatmap0_np_res.append(np.interp(np.linspace(0, N - 1, len_short),np.linspace(0, N - 1, N), heatmap0_np[k,:]))
+                    heatmap0_np_res=np.stack(heatmap0_np_res,0)
 
-                    heatmap0_np_res = np.interp(np.linspace(0, len(heatmap0_np) - 1, len_short),
-                                            np.linspace(0, len(heatmap0_np) - 1, len(heatmap0_np)), heatmap0_np)
 
-                    file_names_sep = os.path.split(file_names[hm_index])
-
-                    np.save(heatmap0_np_res,f"../res/{file_names_sep[1][:-4]}_heatmap.npy")
+                    np.save(Config.res_dir + os.sep + file_names[hm_index]+"_heatmap.npy",heatmap0_np_res)
 
 
 
@@ -154,17 +155,17 @@ def train(names_train, names_valid):
 
     return log
 
-
-split = np.load(Config.info_save_dir + os.sep + 'split.npy', allow_pickle=True).item()
-
-try:
-    os.mkdir(Config.best_models_dir)
-except:
-    pass
-
-try:
-    os.mkdir(Config.model_save_dir)
-except:
-    pass
-
-log = train(split['train'], split['valid'])
+if __name__ == "__main__":
+    split = np.load(Config.info_save_dir + os.sep + 'split.npy', allow_pickle=True).item()
+    
+    try:
+        os.mkdir(Config.best_models_dir)
+    except:
+        pass
+    
+    try:
+        os.mkdir(Config.model_save_dir)
+    except:
+        pass
+    
+    log = train(split['train'], split['valid'])

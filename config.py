@@ -3,6 +3,7 @@ import os
 
 class Config:
     best_models_dir = "../models"
+    res_dir='../res'
 
     model_save_dir = "../tmp"
 
@@ -14,6 +15,11 @@ class Config:
 
     try:
         os.mkdir(DATA_TMP_PATH)
+    except:
+        pass
+    
+    try:
+        os.mkdir(res_dir)
     except:
         pass
 
@@ -28,9 +34,9 @@ class Config:
     pato_names = ['Normal', 'PVC']
 
     train_batch_size = 32
-    train_num_workers = 4
+    train_num_workers = 0
     valid_batch_size = 32
-    valid_num_workers = 4
+    valid_num_workers = 0
 
     max_epochs = 107
     step_size = 35

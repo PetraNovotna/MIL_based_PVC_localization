@@ -1,7 +1,7 @@
 # resave data
 from shutil import copyfile, rmtree
 import os
-import config as Config
+from config import Config
 import load_fncs as lf
 
 

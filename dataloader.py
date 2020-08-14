@@ -1,7 +1,7 @@
 from torch.utils import data
 import numpy as np
 import torch
-import config as Config
+from config import Config
 import load_fncs as lf
 import os
 
