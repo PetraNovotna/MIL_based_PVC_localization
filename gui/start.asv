@@ -1,0 +1,21 @@
+clc;clear all;close all;
+
+data_folder='../../Training_WFDB_filtered_2';
+
+hetmap_names=subdir('../../res/*.npy');
+
+
+
+hetmap_names={hetmap_names.name};
+
+signal_names={};
+for k = 1:length(hetmap_names)
+    [filepath,name,ext] = fileparts(hetmap_names{k});
+    
+    tmp=[data_folder filesep]
+    
+    signal_names=[signal_names tmp];
+    
+    
+    
+end
