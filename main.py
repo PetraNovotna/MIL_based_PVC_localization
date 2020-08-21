@@ -12,11 +12,11 @@ from config import Config
 from net import Net_addition_grow
 import load_fncs as lf
 from dataloader import Dataset
-from logg_and_losses import get_lr
+from logg_and_losses import get_lr, wce, Log
 import net
-from logg_and_losses import wce, Log
 
 
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 def train(names_train, names_valid):
     device = torch.device("cuda:0")
@@ -95,14 +95,14 @@ def train(names_train, names_valid):
             len_ratio = len_short / len(pad_seqs0_np)
             heatmap_end = int(round(len(heatmap0_np) * len_ratio))
 
-            plt.figure(figsize=(15, 7))
-            plt.plot(heatmap0_np[0:heatmap_end], 'b')
-            plt.title(str(res.detach().cpu().numpy()[0, 0]))
-            plt.show()
-            plt.figure(figsize=(15, 7))
-            plt.plot(pad_seqs0_np[0:len_short], 'r')
-            plt.title(str(lbls.detach().cpu().numpy()[0]))
-            plt.show()
+            # plt.figure(figsize=(15, 7))
+            # plt.plot(heatmap0_np[0:heatmap_end], 'b')
+            # plt.title(str(res.detach().cpu().numpy()[0, 0]))
+            # plt.show()
+            # plt.figure(figsize=(15, 7))
+            # plt.plot(pad_seqs0_np[0:len_short], 'r')
+            # plt.title(str(lbls.detach().cpu().numpy()[0]))
+            # plt.show()
 
             loss = loss_fcn(res, lbls, w_positive_tensor, w_negative_tensor)
 
@@ -149,7 +149,7 @@ def train(names_train, names_valid):
         torch.save(model, model_name)
 
         ## plot loss and beta score
-        model.plot_training()
+        # model.plot_training()
 
         scheduler.step()
 
