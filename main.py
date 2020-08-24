@@ -28,10 +28,8 @@ def train():
 
     
     
-    # file_list = glob.glob(Config.DATA_TMP_PATH + "/*.mat")
-    
-    file_list = glob.glob(Config.lbls_path + "/*.mat")
-    file_list = [x.replace('_naklikane.mat','.mat').replace(Config.lbls_path,Config.DATA_TMP_PATH) for x in file_list]
+    file_list = glob.glob(Config.DATA_TMP_PATH + "/*.mat")
+
     
     num_of_sigs=len(file_list)
     
@@ -47,6 +45,7 @@ def train():
     np.random.seed(42)
     split_ratio_ind = int(np.floor(Config.SPLIT_RATIO[0] / (Config.SPLIT_RATIO[0] + Config.SPLIT_RATIO[1]) * num_of_sigs))
     permuted_idx = np.random.permutation(num_of_sigs)
+    np.random.set_state(state)
     train_ind = permuted_idx[:split_ratio_ind]
     valid_ind = permuted_idx[split_ratio_ind:]
     partition = {"train": [file_list[file_idx] for file_idx in train_ind],
@@ -60,14 +59,14 @@ def train():
 
     validation_generator = Dataset(partition["valid"], 'valid')
     validation_generator = data.DataLoader(validation_generator, batch_size=Config.valid_batch_size,
-                                           num_workers=Config.valid_num_workers, shuffle=False, drop_last=False,
+                                           num_workers=Config.valid_num_workers, shuffle=True, drop_last=False,
                                            collate_fn=Dataset.collate_fn)
 
 
     model = net.Net_addition_grow(levels=Config.levels, lvl1_size=Config.lvl1_size, input_size=Config.input_size,
                               output_size=Config.output_size,
                               convs_in_layer=Config.convs_in_layer, init_conv=Config.init_conv,
-                              filter_size=Config.filter_size)
+                              filter_size=Config.filter_size,mil_solution=Config.mil_solution)
 
     model = model.to(device)
 
@@ -146,15 +145,6 @@ def train():
             ## save results
             log.append_test([loss])
 
-
-            heatmap0_np = heatmap[0, 0, :]
-            pad_seqs0_np = pad_seqs.detach().cpu().numpy()[0, 1, :]
-
-            len_short = int(lens.detach().cpu().numpy()[0])
-            len_ratio = len_short / len(pad_seqs0_np)
-            heatmap_end = int(round(len(heatmap0_np) * len_ratio))
-            
-
             if epoch == (Config.max_epochs-1):
                 heatmap_np = heatmap
                 pad_seq_np = pad_seqs.detach().cpu().numpy()
@@ -165,22 +155,34 @@ def train():
                     pad_seqs0_np = pad_seq_np[hm_index,:,:]
 
 
-                    len_short = int(lens_np[hm_index])
-                    len_ratio = len_short / pad_seqs0_np.shape[1]
-                    heatmap_end = int(round(heatmap0_np.shape[1] * len_ratio))
-                    heatmap0_np = heatmap0_np[:,0:heatmap_end]
+                    len_short = int(np.floor(lens_np[hm_index]/(2**Config.levels))*(2**Config.levels))
+
+                    heatmap0_np = heatmap0_np[:,:int(np.floor(lens_np[hm_index]/(2**Config.levels)))]
                     N=heatmap0_np.shape[1]
                     heatmap0_np_res=[]
                     for k in range(heatmap0_np.shape[0]):
-                        heatmap0_np_res.append(np.interp(np.linspace(0, N - 1, len_short),np.linspace(0, N - 1, N), heatmap0_np[k,:]))
+                        tmp=np.zeros(int(lens_np[hm_index]))
+                        tmp[:len_short]=np.interp(np.linspace(0, N - 1, len_short),np.linspace(0, N - 1, N), heatmap0_np[k,:])
+                        heatmap0_np_res.append(tmp)
                     heatmap0_np_res=np.stack(heatmap0_np_res,0)
 
+                    head,tail = os.path.split(file_names[hm_index])
+                    np.save(Config.res_dir + os.sep + tail.replace('.mat',"_heatmap.npy"),heatmap0_np_res)
 
-                    np.save(Config.res_dir + os.sep + file_names[hm_index]+"_heatmap.npy",heatmap0_np_res)
 
 
-        plt.plot(heatmap[0,0,:])
-        plt.plot(detection_subsampled[0,0,:])
+
+
+        plt.plot(heatmap[0,0,:int(np.floor(lens.detach().cpu().numpy()[0]/(2**Config.levels)))])
+        if not Config.is_mil:
+            plt.ylim(-0.05,1)
+        plt.title('result')
+        plt.show()
+        
+        plt.plot(detection_subsampled[0,0,:int(np.floor(lens.detach().cpu().numpy()[0]/(2**Config.levels)))])
+        plt.ylim(-0.05,1)
+        if not Config.is_mil:
+            plt.title('gt')
         plt.show()
         
         
@@ -197,7 +199,10 @@ def train():
         model.save_config(Config)
         torch.save(model, model_name)
 
-        log.plot(model_name)
+        if not Config.is_mil:
+            log.plot(model_name,ylim=[0,0.01])
+        else:
+            log.plot(model_name)
         
         scheduler.step()
 

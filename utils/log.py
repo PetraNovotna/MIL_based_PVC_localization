@@ -43,7 +43,7 @@ class Log():
         
         
         
-    def plot(self,save_name=None):
+    def plot(self,save_name=None,ylim=None):
         if save_name is not None:
             save_names=[save_name,None]
         else:
@@ -53,6 +53,8 @@ class Log():
             for name in self.names:
                 plt.plot( self.train_log[name], label = 'train')
                 plt.plot(self.test_log[name], label = 'test')
+                if ylim is not None:
+                    plt.ylim(ylim)
                 plt.title(name)
                 if save_name:
                     plt.savefig(save_name + name + '.png')

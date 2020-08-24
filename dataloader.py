@@ -50,7 +50,7 @@ class Dataset(data.Dataset):
         
         Y[lbl]=1
         
-        Y = gaussian_filter(Y,70,mode='constant')/0.006
+        Y = gaussian_filter(Y,Config.gaussian_sigma,mode='constant')/(1/(Config.gaussian_sigma*np.sqrt(2*np.pi)))
         Y=Y.reshape((1,len(Y))).astype(np.float32)
 
         
@@ -65,7 +65,7 @@ class Dataset(data.Dataset):
                 shift = torch.randint(sig_len, (1, 1)).view(-1).numpy()
 
                 X = np.roll(X, shift, axis=1)
-                Y = np.roll(X, shift, axis=1)
+                Y = np.roll(Y, shift, axis=1)
 
             # ranzomly inserted zeros
             # if torch.rand(1).numpy()[0] > 0.3:
@@ -79,7 +79,7 @@ class Dataset(data.Dataset):
             ## random stretch -
             if torch.rand(1).numpy()[0] > 0.3:
 
-                max_resize_change = 0.1
+                max_resize_change = 0.2
                 relative_change = 1 + torch.rand(1).numpy()[0] * 2 * max_resize_change - max_resize_change
                 ##mutliply by 2 is same as equvalent to multiply by 0.5 not 0!
                 if relative_change<1:
@@ -105,7 +105,7 @@ class Dataset(data.Dataset):
             ## random multiplication of each lead by a number
             if torch.rand(1).numpy()[0] > 0.3:
 
-                max_mult_change = 0.2
+                max_mult_change = 0.4
 
                 for k in range(signal_num):
                     mult_change = 1 + torch.rand(1).numpy()[0] * 2 * max_mult_change - max_mult_change

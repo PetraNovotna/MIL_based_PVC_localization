@@ -1,6 +1,7 @@
 import os
 from utils.losses import wce,mse
 import numpy as np
+import shutil
 
 class Config:
     
@@ -9,16 +10,28 @@ class Config:
     model_save_dir = "../tmp"
 
     DATA_PATH = "../Training_WFDB"
-
-    DATA_TMP_PATH = "../Training_WFDB_filtered_2"
     
-    lbls_path='../naklikane_nedodelane'
+    lbls_path='../output_klikace_all'
 
 
     is_mil=0
     
+    mil_solution='max'
+    
+    gaussian_sigma=80
+    
+    
+    # pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
+    # DATA_TMP_PATH = "../Training_WFDB_filtered"
+
+    pato_names = ['Normal', 'PVC']
+    DATA_TMP_PATH = "../Training_WFDB_filtered_2"
+    
+    
+    
+    
     if is_mil:
-        res_dir='../res_MIL'
+        res_dir='../res_MIL' + '_' + mil_solution
     else:
         res_dir='../res_detection'
         
@@ -27,6 +40,14 @@ class Config:
         os.mkdir(DATA_TMP_PATH)
     except:
         pass
+    
+    
+    try:
+        shutil.rmtree(res_dir)
+    except:
+        pass
+    
+    
     
     try:
         os.mkdir(res_dir)
@@ -40,9 +61,7 @@ class Config:
 
   
 
-    # pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
 
-    pato_names = ['Normal', 'PVC']
 
     train_batch_size = 32
     valid_batch_size = 32
@@ -53,7 +72,7 @@ class Config:
 
     
     LR_LIST=np.array([0.001,0.0001,0.00001])
-    LR_CHANGES_LIST=[50,30,10]
+    LR_CHANGES_LIST=[60,30,15]
     if is_mil:
         LOSS_FUNTIONS=[wce,wce,wce]
     else:

@@ -37,8 +37,9 @@ class myConv(nn.Module):
 class Net_addition_grow(nn.Module):
 
     def __init__(self, levels=7, lvl1_size=4, input_size=12, output_size=9, convs_in_layer=3, init_conv=4,
-                 filter_size=13, ):
+                 filter_size=13, mil_solution='max'):
         super().__init__()
+        self.mil_solution=mil_solution
         self.levels = levels
         self.lvl1_size = lvl1_size
         self.input_size = input_size
@@ -140,7 +141,13 @@ class Net_addition_grow(nn.Module):
 
         help_mult = list(x.size())[2]
 
-        x = F.adaptive_avg_pool1d(x, 1)
+        if self.mil_solution=='max':
+            x = F.adaptive_max_pool1d(x, 1)
+        elif self.mil_solution=='mean':
+            x = F.adaptive_avg_pool1d(x, 1)
+        else:
+            print('error mil solution')
+        
 
         help_lens = lens.view(list(x.size()))
 
