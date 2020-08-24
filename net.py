@@ -72,7 +72,7 @@ class Net_addition_grow(nn.Module):
                 init.xavier_normal_(m.weight)
                 init.constant_(m.bias, 0)
 
-    def forward(self, x, lens):
+    def forward(self, x, lens,detection):
 
         ## make signal len be divisible by 2**number of levels
         ## replace rest by zeros
@@ -98,6 +98,8 @@ class Net_addition_grow(nn.Module):
             xx = xx.to(device)
 
         x = torch.cat((x, xx), 2)  ### add zeros to signal
+        detection=torch.cat((detection, xx), 2)
+        detection=F.avg_pool1d(detection, 2 ** self.levels, 2 ** self.levels)
 
         x.requires_grad = True
 
@@ -132,6 +134,7 @@ class Net_addition_grow(nn.Module):
             k = int(np.floor(lens[signal_num].cpu().numpy() / (2 ** (self.levels - 1))))
 
             x[signal_num, :, k:] = 0
+        
 
         # set_trace()
 
@@ -149,7 +152,7 @@ class Net_addition_grow(nn.Module):
         x = torch.sigmoid(x)
         # x= (torch.sigmoid(x) - 0.5) * 2
 
-        return x, heatmap, score
+        return x, heatmap, score,detection
 
     def save_log(self, log):
         self.log = log
