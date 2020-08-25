@@ -14,11 +14,11 @@ class Config:
     lbls_path='../output_klikace_all'
 
 
-    is_mil=0
+    is_mil=1
     
     mil_solution='max'
     
-    gaussian_sigma=80
+    gaussian_sigma=100
     
     
     # pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
@@ -33,7 +33,7 @@ class Config:
     if is_mil:
         res_dir='../res_MIL' + '_' + mil_solution
     else:
-        res_dir='../res_detection'
+        res_dir='../res_detection_gausian' + str(gaussian_sigma)
         
 
     try:

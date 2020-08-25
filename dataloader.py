@@ -67,12 +67,12 @@ class Dataset(data.Dataset):
                 X = np.roll(X, shift, axis=1)
                 Y = np.roll(Y, shift, axis=1)
 
-            # ranzomly inserted zeros
+            # # ranzomly inserted zeros
             # if torch.rand(1).numpy()[0] > 0.3:
 
             #     rand_pos = int(torch.randint(sig_len, (1, 1)).view(-1).numpy())
-            #     if sig_len - rand_pos > Config.zeros_len:
-            #         X[:, rand_pos:rand_pos + Config.zeros_len] = 0
+            #     if sig_len - rand_pos > 1000:
+            #         X[:, rand_pos:rand_pos + 1000] = 0
             #     else:
             #         X[:, rand_pos:] = 0
 

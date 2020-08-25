@@ -6,7 +6,10 @@ from scipy.signal import find_peaks
 from utils.get_results import get_results
 
 
-hetmap_folder='../res_detection'
+# hetmap_folder='../res_detection_gausian100'
+hetmap_folder='../res_MIL_max'
+# hetmap_folder='../res_MIL_mean'
+# hetmap_folder='../res_MIL_maxzeros'
 gt_folder='../output_klikace_all'
 
 
@@ -73,7 +76,7 @@ def func(all_results=False,**params):
 
 param_names=['height','distance','prominence']
 
-bounds_lw=[heat_min,1,1]
+bounds_lw=[heat_min,1,0]
 bounds_up=[heat_max,1000,heat_max-heat_min]
 
 
