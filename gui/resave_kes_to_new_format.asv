@@ -1,0 +1,14 @@
+clc;clear all;close all;
+
+
+input_dir='../../output_klikace_valid_all';
+
+
+
+output_dir='../../output_labeled_old';
+
+
+
+
+files=subdir(input_dir);
+files={files{:}.name}
