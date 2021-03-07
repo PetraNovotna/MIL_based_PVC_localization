@@ -9,23 +9,24 @@ class Config:
 
     model_save_dir = "../tmp"
 
-    DATA_PATH = "../Training_WFDB"
+    DATA_PATH = "../data_ke_clanku/Training_WFDB"
     
-    lbls_path='../output_klikace_all'
+    lbls_path='../data_ke_clanku/output_labeled'
+    
 
 
-    is_mil=1
+    is_mil=1  #########nastavovat 
     
-    mil_solution='max'
+    mil_solution = 'max'
     
-    gaussian_sigma=100
+    gaussian_sigma = 100  #########nastavovat - vybrat nejlepší
     
     
     # pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
     # DATA_TMP_PATH = "../Training_WFDB_filtered"
 
-    pato_names = ['Normal', 'PVC']
-    DATA_TMP_PATH = "../Training_WFDB_filtered_2"
+    pato_names = ['Normal', 'PVC', 'PAC']
+    DATA_TMP_PATH = "../data_ke_clanku/Training_WFDB_filtered_2"
     
     
     
@@ -66,8 +67,8 @@ class Config:
     train_batch_size = 32
     valid_batch_size = 32
     
-    valid_num_workers = 3
-    train_num_workers = 3
+    valid_num_workers = 0
+    train_num_workers = 0
 
 
     
@@ -90,7 +91,7 @@ class Config:
     levels = 6
     lvl1_size = 6
     input_size = 12
-    output_size = 1
+    output_size = 2
     convs_in_layer = 2
     init_conv = lvl1_size
     filter_size = 5

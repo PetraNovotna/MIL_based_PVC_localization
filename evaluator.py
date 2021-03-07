@@ -10,7 +10,7 @@ from utils.get_results import get_results
 hetmap_folder='../res_MIL_max'
 # hetmap_folder='../res_MIL_mean'
 # hetmap_folder='../res_MIL_maxzeros'
-gt_folder='../output_klikace_all'
+gt_folder = '../data_ke_clanku/output_labeled'
 
 
 file_list_heatmap = glob.glob(hetmap_folder + "/*.npy")
@@ -20,16 +20,21 @@ lbls=[]
 heatmaps=[]
 for k,heatmap_name in enumerate(file_list_heatmap):
 
-    gt_name = heatmap_name.replace(hetmap_folder,gt_folder).replace('_heatmap.npy','_naklikane.mat')
+    gt_name = heatmap_name.replace(hetmap_folder,gt_folder).replace('_heatmap.npy','_position_labels.mat')
     
     
-    lbl = lf.read_lbl(gt_name)
-    if len(lbl)>0:
-        lbl = lbl[0,:]
-    else:
-        lbl=np.array([])
-    
+    lbl_PAC,lbl_PVC = lf.read_lbl_pos(gt_name)
     heatmap=np.load(heatmap_name)
+    
+   
+    lbl = lbl_PAC
+    heatmap = heatmap[[0],:]
+    
+    
+    # lbl = lbl_PVC
+    # heatmap = heatmap[[1],:]
+    
+    
     
     
     lbls.append(lbl)

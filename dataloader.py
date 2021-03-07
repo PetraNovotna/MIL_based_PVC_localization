@@ -30,28 +30,46 @@ class Dataset(data.Dataset):
             
         sig_len = X.shape[1]
         signal_num = X.shape[0]
-        lbl_num = 1
+        
+
+        
 
         head,tail = os.path.split(file_name)
-        lbl_file_name=Config.lbls_path + os.sep + tail.replace('.mat','_naklikane.mat')
-        lbl = lf.read_lbl(lbl_file_name)
+        lbl_file_name=Config.lbls_path + os.sep + tail.replace('.mat','_position_labels.mat')
+        lbl_PAC,lbl_PVC = lf.read_lbl_pos(lbl_file_name)
 
 
-        ## create more hot encoding
-        if len(lbl)>0:
-            y = np.array(1).astype(np.float32)
-        else:
-            y = np.array(0).astype(np.float32)
-
-        y = y.reshape(1, 1)
+        y  = np.zeros(2,dtype = np.float32)
+        if len(lbl_PAC)>0:
+            y[0] = 1
+        if len(lbl_PVC)>0:
+            y[1] = 1
 
 
-        Y=np.zeros((sig_len))
+
+        Y_PAC=np.zeros((sig_len))
         
-        Y[lbl]=1
+        Y_PAC[lbl_PAC]=1
         
-        Y = gaussian_filter(Y,Config.gaussian_sigma,mode='constant')/(1/(Config.gaussian_sigma*np.sqrt(2*np.pi)))
-        Y=Y.reshape((1,len(Y))).astype(np.float32)
+        Y_PAC = gaussian_filter(Y_PAC,Config.gaussian_sigma,mode='constant')/(1/(Config.gaussian_sigma*np.sqrt(2*np.pi)))
+        Y_PAC = Y_PAC.reshape((1,len(Y_PAC))).astype(np.float32)
+        
+        
+        
+        Y_PVC=np.zeros((sig_len))
+        
+        Y_PVC[lbl_PVC]=1
+        
+        Y_PVC = gaussian_filter(Y_PVC,Config.gaussian_sigma,mode='constant')/(1/(Config.gaussian_sigma*np.sqrt(2*np.pi)))
+        Y_PVC = Y_PVC.reshape((1,len(Y_PVC))).astype(np.float32)
+        
+        
+        Y = np.concatenate((Y_PAC,Y_PVC),axis = 0)
+        lbl_num = Y.shape[0]
+        
+        if Y.shape[0] ==1:
+            pass
+        
 
         
         ## normalization
@@ -136,7 +154,7 @@ class Dataset(data.Dataset):
             end = lens[i]
             padded_seqs[i, :, :end] = seq
             
-        padded_lbls_seqs = pad_val * np.ones((len(seqs), seqs[0].shape[0], np.max(lens))).astype(np.float32)
+        padded_lbls_seqs = pad_val * np.ones((len(lbls_seqs), lbls_seqs[0].shape[0], np.max(lens))).astype(np.float32)
         for i, seq in enumerate(lbls_seqs):
             end = lens[i]
             padded_lbls_seqs[i, :, :end] = seq    

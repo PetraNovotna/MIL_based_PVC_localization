@@ -9,7 +9,7 @@ import glob
 import torch.nn.functional as F
 
 from utils.load_fncs import read_data
-from utils.load_fncs import read_lbl
+from utils.load_fncs import read_lbl_pos
 from config import Config
 from net import Net_addition_grow
 import utils.load_fncs as lf

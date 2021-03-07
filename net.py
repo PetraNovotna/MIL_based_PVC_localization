@@ -99,8 +99,21 @@ class Net_addition_grow(nn.Module):
             xx = xx.to(device)
 
         x = torch.cat((x, xx), 2)  ### add zeros to signal
+        
+        
+        
+        shape = list(detection.size())
+        xx = torch.zeros((shape[0], shape[1], int(padded_length)), dtype=x.dtype)
+        cuda_check = detection.is_cuda
+        if cuda_check:
+            cuda_device = detection.get_device()
+            device = torch.device('cuda:' + str(cuda_device))
+            xx = xx.to(device)
         detection=torch.cat((detection, xx), 2)
         detection=F.avg_pool1d(detection, 2 ** self.levels, 2 ** self.levels)
+
+
+
 
         x.requires_grad = True
 
